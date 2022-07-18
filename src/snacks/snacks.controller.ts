@@ -19,7 +19,7 @@ export class SnacksController {
     @Body('description') snackDes: string,
     @Body('price') snackPrice: number,
     @Body('shopLocation') snackLoc: string,
-  ): any {
+  ) {
     const generatedId = this.snacksService.addSnacks(
       snackTitle,
       snackDes,
