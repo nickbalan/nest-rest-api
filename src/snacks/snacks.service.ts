@@ -61,7 +61,7 @@ export class SnacksService {
   }
 
   private findSnack(id: string): [Snacks, number] {
-    const snackIndex = this.snacks.findIndex(snack => snack.id == id);
+    const snackIndex = this.snacks.findIndex(snack => snack.id === id);
     const snack = this.snacks[snackIndex];
     if (!snack) {
       throw new NotFoundException('Can not find Snacks');
