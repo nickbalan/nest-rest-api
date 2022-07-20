@@ -1,72 +1,98 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { Snacks } from './snacks.model';
 
 @Injectable()
 export class SnacksService {
-  private snacks: Snacks[] = [];
-  addSnacks(
+  constructor(
+    @InjectModel('Snacks') private readonly snacksModel: Model<Snacks>,
+  ) {}
+
+  async addSnacks(
     title: string,
     description: string,
     price: number,
     shopLocation: string,
   ) {
-    const snackId = Math.random().toString();
-    const newSnack = new Snacks(
-      snackId,
-      title,
-      description,
-      price,
-      shopLocation,
-    );
-    this.snacks.push(newSnack);
-    return snackId;
+    const newSnack = new this.snacksModel({
+      title: title,
+      description: description,
+      price: price,
+      shopLocation: shopLocation,
+    });
+    const newSnackResult = await newSnack.save();
+    /* console.log(newSnackResult); */
+    return newSnackResult.id as string;
   }
 
-  getSnacks() {
-    return [...this.snacks];
+  async getSnacks() {
+    const snacks = await this.snacksModel.find().exec();
+    /* console.log(snacks); */
+    return snacks.map((snack) => ({
+      id: snack.id,
+      title: snack.title,
+      description: snack.description,
+      price: snack.price,
+      shopLocation: snack.shopLocation,
+    }));
   }
 
-  getOneSnack(snackId: string) {
-    const snack = this.findSnack(snackId);
-    return { ...snack };
+  async getOneSnack(snackId: string) {
+    const snack = await this.findSnack(snackId);
+    return {
+      id: snack.id,
+      title: snack.title,
+      description: snack.description,
+      price: snack.price,
+      shopLocation: snack.shopLocation,
+    };
   }
 
-  updateSanck(
+  async updateSnack(
     snackId: string,
     title: string,
     description: string,
     price: number,
     shopLocation: string,
   ) {
-    const [snack, index]  = this.findSnack(snackId);
-    const updatedSanck = {...snack};
+    const updatedSnack = await this.findSnack(snackId);
     if (title) {
-      updatedSanck.title = title;
+      updatedSnack.title = title;
     }
     if (description) {
-      updatedSanck.description = description;
+      updatedSnack.description = description;
     }
     if (price) {
-      updatedSanck.price = price;
+      updatedSnack.price = price;
     }
     if (shopLocation) {
-      updatedSanck.shopLocation= shopLocation;
+      updatedSnack.shopLocation = shopLocation;
     }
-    this.snacks[index] = updatedSanck;
+    updatedSnack.save();
   }
 
-  deleteSnack(snackId: string) {
-    const index = this.findSnack(snackId)[1];
-    this.snacks.splice(index, 1);
+  async deleteSnack(snackId: string) {
+    const deleteResult = await this.snacksModel
+      .deleteOne({ _id: snackId })
+      .exec();
+    /* console.log(deleteResult); */
+    if (deleteResult.deletedCount === 0) {
+      throw new NotFoundException('Could not find Snacks');
+    }
   }
 
-  private findSnack(id: string): [Snacks, number] {
-    const snackIndex = this.snacks.findIndex(snack => snack.id === id);
-    const snack = this.snacks[snackIndex];
+  private async findSnack(id: string): Promise<Snacks> {
+    let snack;
+    try {
+      snack = await this.snacksModel.findById(id).exec();
+    } catch (error) {
+      throw new NotFoundException('Could not find Snacks');
+    }
+
     if (!snack) {
-      throw new NotFoundException('Can not find Snacks');
+      throw new NotFoundException('Could not find Snacks');
     }
-    return [snack, snackIndex];
+    return snack;
   }
- 
 }

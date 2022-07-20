@@ -14,13 +14,13 @@ export class SnacksController {
   constructor(private readonly snacksService: SnacksService) {}
 
   @Post()
-  postSnack(
+  async postSnack(
     @Body('title') snackTitle: string,
     @Body('description') snackDes: string,
     @Body('price') snackPrice: number,
     @Body('shopLocation') snackLoc: string,
   ) {
-    const generatedId = this.snacksService.addSnacks(
+    const generatedId = await this.snacksService.addSnacks(
       snackTitle,
       snackDes,
       snackPrice,
@@ -30,8 +30,9 @@ export class SnacksController {
   }
 
   @Get()
-  getAllSnack() {
-    return this.snacksService.getSnacks();
+  async getAllSnack() {
+    const snacks = await this.snacksService.getSnacks();
+    return snacks;
   }
 
   @Get(':id')
@@ -40,14 +41,14 @@ export class SnacksController {
   }
 
   @Patch(':id')
-  updateSnack(
+  async updateSnack(
     @Param('id') snackId: string,
     @Body('title') snackTitle: string,
     @Body('description') snackDescription: string,
     @Body('price') snackPrice: number,
     @Body('shopLocation') snackLocation: string,
   ) {
-    this.snacksService.updateSanck(
+    await this.snacksService.updateSnack(
       snackId,
       snackTitle,
       snackDescription,
@@ -58,8 +59,8 @@ export class SnacksController {
   }
 
   @Delete(':id')
-  deleteSnacks(@Param('id') snackId: string) {
-    this.snacksService.deleteSnack(snackId);
+  async deleteSnacks(@Param('id') snackId: string) {
+    await this.snacksService.deleteSnack(snackId);
     return null;
   }
 }
