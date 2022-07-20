@@ -89,6 +89,7 @@ export class SnacksService {
     } catch (error) {
       throw new NotFoundException('Could not find Snacks');
     }
+
     if (!snack) {
       throw new NotFoundException('Could not find Snacks');
     }
