@@ -31,7 +31,7 @@ export class SnacksService {
     return { ...snack };
   }
 
-  updateSanck(
+  updateSnack(
     snackId: string,
     title: string,
     description: string,
@@ -39,20 +39,20 @@ export class SnacksService {
     shopLocation: string,
   ) {
     const [snack, index]  = this.findSnack(snackId);
-    const updatedSanck = {...snack};
+    const updatedSnack = {...snack};
     if (title) {
-      updatedSanck.title = title;
+      updatedSnack.title = title;
     }
     if (description) {
-      updatedSanck.description = description;
+      updatedSnack.description = description;
     }
     if (price) {
-      updatedSanck.price = price;
+      updatedSnack.price = price;
     }
     if (shopLocation) {
-      updatedSanck.shopLocation= shopLocation;
+      updatedSnack.shopLocation= shopLocation;
     }
-    this.snacks[index] = updatedSanck;
+    this.snacks[index] = updatedSnack;
   }
 
   deleteSnack(snackId: string) {

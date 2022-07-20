@@ -47,7 +47,7 @@ export class SnacksController {
     @Body('price') snackPrice: number,
     @Body('shopLocation') snackLocation: string,
   ) {
-    this.snacksService.updateSanck(
+    this.snacksService.updateSnack(
       snackId,
       snackTitle,
       snackDescription,
