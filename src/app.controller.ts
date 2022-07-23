@@ -1,26 +1,19 @@
-import {
-  Controller,
-  Get,
-  Header,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { AuthService } from './auth/auth.service';
+import { JwtAuthGuard } from './auth/jwt-auth.guards';
 import { LocalAuthGuards } from './auth/local-auth.guards';
-import { AuthenticatedGuards } from './auth/local-authenticated.guards';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuards)
   @Post('login')
   login(@Request() req): any {
-    return {msg: 'You are logged in.'};
+    return this.authService.login(req.user);
   }
 
-  @UseGuards(AuthenticatedGuards)
+  @UseGuards(JwtAuthGuard)
   @Get('authenticated')
   getHello(@Request() req): string {
     return req.user;
